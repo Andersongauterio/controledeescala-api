@@ -32,6 +32,11 @@ public class EscalaDia {
 		this.escalaFuncionarioDia = escalaFuncionariosDia;
 	}
 	
+	public EscalaDia(Integer dia, Mes mes) {
+		this.dia = dia;
+		this.mes = mes;
+	}
+	
 	public Boolean getFeriado() {
 		return feriado;
 	}

@@ -10,3 +10,6 @@ INSERT INTO FUNCIONARIO (nome, horario_padrao, funcao) VALUES ('Caixa 6', '13:15
 INSERT INTO FUNCIONARIO (nome, horario_padrao, funcao) VALUES ('Caixa 7', '13:15 às 14:45 e 16:00 às 22:00','CAIXA');
 INSERT INTO FUNCIONARIO (nome, horario_padrao, funcao) VALUES ('Caixa 8', '13:15 às 14:45 e 16:00 às 22:00','CAIXA');
 INSERT INTO FUNCIONARIO (nome, horario_padrao, funcao) VALUES ('Caixa 9', '13:15 às 14:45 e 16:00 às 22:00','CAIXA');
+
+INSERT INTO FERIADO (dia, mes, ano, descricao) values (15,'ABRIL',2022,'Sexta Feira Santa');
+INSERT INTO FERIADO (dia, mes, ano, descricao) values (21,'ABRIL',2022,'Tiradentes');

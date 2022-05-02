@@ -3,47 +3,69 @@ package br.com.anderson.controledeescala.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import br.com.anderson.controledeescala.modelo.EscalaDia;
 import br.com.anderson.controledeescala.modelo.EscalaFuncionarioDia;
 import br.com.anderson.controledeescala.modelo.EscalaMes;
 import br.com.anderson.controledeescala.modelo.Funcionario;
 import br.com.anderson.controledeescala.modelo.Mes;
+import br.com.anderson.controledeescala.service.EscalaMesService;
 import br.com.anderson.controledeescala.service.FuncionariosService;
 
+@RestController
+@RequestMapping("/escala")
 public class EscalaController {
-
-	private FuncionariosService funcionarioService = new FuncionariosService();
+	
+	@Autowired
+	private FuncionariosService funcionarioService;
+	
+	@Autowired
+	private EscalaMesService escalaMesService;
+	
+	@GetMapping("/buscaEscalaMes")
+	public EscalaMes buscaEscala(@RequestParam String mes, @RequestParam Integer ano) {
+		Mes m = Mes.valueOf(mes);
+		EscalaMes escalaDoMes = montaEscala(m, ano);
+		escalaMesService.salvarEscalaDoMes(escalaDoMes);
+		return escalaDoMes; 
+	}
 	
 	public EscalaMes montaEscala(Mes mes, Integer ano) {
 		
 		EscalaMes escalaDoMes = new EscalaMes();
 		escalaDoMes.setAno(ano);
 		escalaDoMes.setMes(mes);
-		List<EscalaDia> listaEscalaDiaria = criarEscalaPorDiaDoMes(mes);
-		escalaDoMes.setEscalaPorDia(listaEscalaDiaria);
+		escalaDoMes.setEscalaPorDia(criarEscalaPorDiaDoMes(mes));
 		return escalaDoMes;
 	}
 
 	private List<EscalaDia> criarEscalaPorDiaDoMes(Mes mes) {
 		
-		List<EscalaDia> escalaPorDia = new ArrayList<>();
+		List<EscalaDia> escalaPorDia = criaEscalaDosFuncionariosPorDia(mes);	
 		
-		for (int i = 1; i < 32; i++) {
-			criaEscalaDosFuncionariosPorDia(i, mes);	
-			System.out.println("-----------------------------------");
-		}
-			
 		return escalaPorDia;
 	}
 
-	private List<EscalaFuncionarioDia> criaEscalaDosFuncionariosPorDia(int dia, Mes mes) {
+	private List<EscalaDia> criaEscalaDosFuncionariosPorDia(Mes mes) {
 		List<EscalaFuncionarioDia> escalasDeFuncionariosDoDia = new ArrayList<>();
-		for (int i = 0; i < funcionarioService.getFuncionarios().size(); i++) {
-			EscalaFuncionarioDia escalaDoDiaDoFuncionario = carregaEscalaDoFuncionario(funcionarioService.getFuncionarioByID(i), dia, mes);
-			escalasDeFuncionariosDoDia.add(escalaDoDiaDoFuncionario);
-		} 
+		List<EscalaDia> escalaPorDia = new ArrayList<EscalaDia>();
+		for (int i = 1; i < 31; i++) {
+			EscalaDia escalaDia = new EscalaDia(i, mes);
+			for (int j = 1; j <= funcionarioService.getFuncionarios().size(); j++) {
+				EscalaFuncionarioDia escalaDoDiaDoFuncionario = carregaEscalaDoFuncionario(funcionarioService.findById((long)j), i, mes);
+				escalasDeFuncionariosDoDia.add(escalaDoDiaDoFuncionario);
+			} 
+			escalaDia.setEscalaFuncionarioDia(escalasDeFuncionariosDoDia);
+			escalaPorDia.add(escalaDia);
+		}
 		
-		return escalasDeFuncionariosDoDia;
+		
+		return escalaPorDia;
 	}
 
 	private EscalaFuncionarioDia carregaEscalaDoFuncionario(Funcionario funcionario, int dia, Mes mes) {

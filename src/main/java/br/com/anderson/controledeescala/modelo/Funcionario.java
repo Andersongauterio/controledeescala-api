@@ -16,7 +16,11 @@ public class Funcionario {
 	private String horarioPadrao;
 	@Enumerated(EnumType.STRING)
 	private Funcao funcao;
-	
+		
+	public Funcionario() {
+
+	}
+
 	public Funcionario(String nome, String horarioPadrao, Funcao funcao) {
 		this.nome = nome;
 		this.horarioPadrao = horarioPadrao;

@@ -3,6 +3,7 @@ package br.com.anderson.controledeescala.modelo;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -19,7 +20,7 @@ public class EscalaMes {
 	@Enumerated(EnumType.STRING)
 	private Mes mes;
 	private Integer ano;
-	@OneToMany(mappedBy = "escalaMes")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "escalaMes")
 	private List<EscalaDia> escalaPorDia = new ArrayList<>();
 	
 	public Long getId() {
