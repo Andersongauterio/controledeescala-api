@@ -1,6 +1,7 @@
 package br.com.anderson.controledeescala.controller;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import br.com.anderson.controledeescala.modelo.EscalaMes;
 import br.com.anderson.controledeescala.modelo.Funcionario;
 import br.com.anderson.controledeescala.modelo.Mes;
 import br.com.anderson.controledeescala.service.EscalaMesService;
+import br.com.anderson.controledeescala.service.FeriadoService;
 import br.com.anderson.controledeescala.service.FuncionariosService;
 
 @RestController
@@ -27,18 +29,22 @@ public class EscalaController {
 	@Autowired
 	private EscalaMesService escalaMesService;
 	
-	@GetMapping("/buscaEscalaMes")
-	public EscalaMes buscaEscala(@RequestParam String mes, @RequestParam Integer ano) {
-		Mes m = Mes.valueOf(mes);
-		EscalaMes escalaDoMes = montaEscala(m, ano);
+	@Autowired
+	private FeriadoService feriadoService;
+	
+	private Calendar calendar = Calendar.getInstance();
+	
+	@GetMapping("/montaEscalaMes")
+	public EscalaMes buscaEscala(@RequestParam String mes) {
+		EscalaMes escalaDoMes = montaEscala(Mes.valueOf(mes.toUpperCase()));
 		escalaMesService.salvarEscalaDoMes(escalaDoMes);
 		return escalaDoMes; 
 	}
 	
-	public EscalaMes montaEscala(Mes mes, Integer ano) {
+	public EscalaMes montaEscala(Mes mes) {
 		
 		EscalaMes escalaDoMes = new EscalaMes();
-		escalaDoMes.setAno(ano);
+		escalaDoMes.setAno(calendar.get(Calendar.YEAR));
 		escalaDoMes.setMes(mes);
 		escalaDoMes.setEscalaPorDia(criarEscalaPorDiaDoMes(mes));
 		return escalaDoMes;
@@ -52,25 +58,29 @@ public class EscalaController {
 	}
 
 	private List<EscalaDia> criaEscalaDosFuncionariosPorDia(Mes mes) {
-		List<EscalaFuncionarioDia> escalasDeFuncionariosDoDia = new ArrayList<>();
+		
 		List<EscalaDia> escalaPorDia = new ArrayList<EscalaDia>();
-		for (int i = 1; i < 31; i++) {
+		
+		calendar.set(Calendar.MONTH, mes.ordinal());
+		
+		for (int i = 1; i <= calendar.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
 			EscalaDia escalaDia = new EscalaDia(i, mes);
-			for (int j = 1; j <= funcionarioService.getFuncionarios().size(); j++) {
-				EscalaFuncionarioDia escalaDoDiaDoFuncionario = carregaEscalaDoFuncionario(funcionarioService.findById((long)j), i, mes);
+			escalaDia.setFeriado(feriadoService.consultaSeDiaEhFeriado(mes, i));
+			List<EscalaFuncionarioDia> escalasDeFuncionariosDoDia = new ArrayList<>();
+			int numeroDeFuncionarios = funcionarioService.getFuncionarios().size();
+			for (int j = 1; j <= numeroDeFuncionarios; j++) {
+				EscalaFuncionarioDia escalaDoDiaDoFuncionario = criaEscalaDoFuncionario(funcionarioService.findById((long)j), i, mes);
 				escalasDeFuncionariosDoDia.add(escalaDoDiaDoFuncionario);
 			} 
 			escalaDia.setEscalaFuncionarioDia(escalasDeFuncionariosDoDia);
 			escalaPorDia.add(escalaDia);
 		}
-		
-		
+				
 		return escalaPorDia;
 	}
 
-	private EscalaFuncionarioDia carregaEscalaDoFuncionario(Funcionario funcionario, int dia, Mes mes) {
+	private EscalaFuncionarioDia criaEscalaDoFuncionario(Funcionario funcionario, int dia, Mes mes) {
 		EscalaFuncionarioDia escalaDoDiaDoFuncionario = new EscalaFuncionarioDia(funcionario, dia, mes, 2022, funcionario.getFuncao(), funcionario.getHorarioPadrao(), false);
-		System.out.println(funcionario.getNome() + " Dia " + dia + " Mes " + mes.toString() + " Hora padrão: " + funcionario.getHorarioPadrao().toString());
 		return escalaDoDiaDoFuncionario;
 	}
 	

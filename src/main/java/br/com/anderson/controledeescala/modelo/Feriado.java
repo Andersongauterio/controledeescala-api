@@ -18,6 +18,10 @@ public class Feriado {
 	private Integer ano;
 	private String descricao;
 	
+	public Feriado() {
+
+	}
+
 	public Long getId() {
 		return id;
 	}
