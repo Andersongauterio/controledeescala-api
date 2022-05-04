@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,17 @@ public class FeriadoService {
 		if(feriado.isPresent())
 			return true;
 		return false;
+	}
+
+	public void salvar(Feriado feriado) {
+		feriadoRepository.save(feriado);		
+	}
+
+	public Feriado buscaPorId(Long id) {
+		Optional<Feriado> feriado = feriadoRepository.findById(id);
+		if (feriado.isPresent())
+			return feriado.get();
+		throw new EntityNotFoundException("Feriado não encontrado");
 	}
 	
 }

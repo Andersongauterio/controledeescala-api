@@ -19,8 +19,16 @@ public class Feriado {
 	private String descricao;
 	
 	public Feriado() {
-
 	}
+	
+	public Feriado(Integer dia, Mes mes, Integer ano, String descricao) {
+		this.dia = dia;
+		this.mes = mes;
+		this.ano = ano;
+		this.descricao = descricao;
+	}
+
+
 
 	public Long getId() {
 		return id;
