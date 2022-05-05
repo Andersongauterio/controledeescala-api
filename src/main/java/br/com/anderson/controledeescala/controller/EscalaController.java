@@ -17,14 +17,14 @@ import br.com.anderson.controledeescala.modelo.Funcionario;
 import br.com.anderson.controledeescala.modelo.Mes;
 import br.com.anderson.controledeescala.service.EscalaMesService;
 import br.com.anderson.controledeescala.service.FeriadoService;
-import br.com.anderson.controledeescala.service.FuncionariosService;
+import br.com.anderson.controledeescala.service.FuncionarioService;
 
 @RestController
 @RequestMapping("/escala")
 public class EscalaController {
 	
 	@Autowired
-	private FuncionariosService funcionarioService;
+	private FuncionarioService funcionarioService;
 	
 	@Autowired
 	private EscalaMesService escalaMesService;
@@ -69,7 +69,7 @@ public class EscalaController {
 			List<EscalaFuncionarioDia> escalasDeFuncionariosDoDia = new ArrayList<>();
 			int numeroDeFuncionarios = funcionarioService.getFuncionarios().size();
 			for (int j = 1; j <= numeroDeFuncionarios; j++) {
-				EscalaFuncionarioDia escalaDoDiaDoFuncionario = criaEscalaDoFuncionario(funcionarioService.findById((long)j), i, mes);
+				EscalaFuncionarioDia escalaDoDiaDoFuncionario = criaEscalaDoFuncionario(funcionarioService.buscaPorId((long)j), i, mes);
 				escalasDeFuncionariosDoDia.add(escalaDoDiaDoFuncionario);
 			} 
 			escalaDia.setEscalaFuncionarioDia(escalasDeFuncionariosDoDia);

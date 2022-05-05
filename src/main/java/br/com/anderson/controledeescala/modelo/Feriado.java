@@ -28,8 +28,6 @@ public class Feriado {
 		this.descricao = descricao;
 	}
 
-
-
 	public Long getId() {
 		return id;
 	}
